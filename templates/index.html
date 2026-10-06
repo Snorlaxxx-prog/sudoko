@@ -1,0 +1,1625 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Sudoku Dashboard</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+
+<div class="page">
+
+    <!-- SIDEBAR -->
+
+    <aside class="sidebar">
+
+        <div class="brand">
+
+            <div class="brand-icon">
+                S
+            </div>
+
+            <div>
+                <h2>Sudoku</h2>
+                <span>CHALLENGE</span>
+            </div>
+
+        </div>
+
+
+        <div class="sidebar-line"></div>
+
+
+        <div class="menu-title">
+            GAME
+        </div>
+
+
+        <div class="menu-item active">
+
+            <span class="menu-icon">▦</span>
+
+            <span>
+                Dashboard
+            </span>
+
+        </div>
+
+
+        <div class="menu-item">
+
+    <span class="menu-icon">🏆</span>
+
+    <span>
+        Challenge
+    </span>
+
+</div>
+
+
+<a href="/about" class="menu-item about-link">
+
+    <span class="menu-icon">
+        👨‍💻
+    </span>
+
+    <span>
+        About Developer
+    </span>
+
+</a>
+
+        <div class="menu-title second">
+            INFORMATION
+        </div>
+
+
+        <div class="info-side">
+
+            <div class="side-info-row">
+                <span>Board</span>
+                <strong>{{ size }} × {{ size }}</strong>
+            </div>
+
+            <div class="side-info-row">
+                <span>Round</span>
+                <strong id="side-round">
+                    {{ round_number }}
+                </strong>
+            </div>
+
+            <div class="side-info-row">
+                <span>Hints</span>
+                <strong id="side-hints">
+                    3
+                </strong>
+            </div>
+
+        </div>
+
+
+        <div class="sidebar-bottom">
+
+            <div class="tip-box">
+
+                <div class="tip-icon">
+                    💡
+                </div>
+
+                <div>
+                    <strong>Quick Tip</strong>
+
+                    <p>
+                        Think carefully before checking your answer.
+                    </p>
+                </div>
+
+            </div>
+
+        </div>
+
+    </aside>
+
+
+    <!-- MAIN CONTENT -->
+
+    <main class="main">
+
+        <!-- TOP BAR -->
+
+        <header class="topbar">
+
+            <div>
+
+                <span class="page-label">
+                    GAME DASHBOARD
+                </span>
+
+                <h1>
+                    Sudoku Challenge
+                </h1>
+
+                <p>
+                    dev - Diablo Cah20
+                </p>
+
+            </div>
+
+
+            <div class="top-status">
+
+                <div class="status-dot"></div>
+
+                <span>
+                    Game Active
+                </span>
+
+            </div>
+
+        </header>
+
+
+        <!-- STAT CARDS -->
+
+        <section class="stats">
+
+            <div class="stat-card blue">
+
+                <div class="stat-icon">
+                    ▦
+                </div>
+
+                <div class="stat-text">
+
+                    <span>
+                        BOARD SIZE
+                    </span>
+
+                    <strong>
+                        {{ size }} × {{ size }}
+                    </strong>
+
+                </div>
+
+            </div>
+
+
+            <div class="stat-card purple">
+
+                <div class="stat-icon">
+                    🏆
+                </div>
+
+                <div class="stat-text">
+
+                    <span>
+                        CURRENT ROUND
+                    </span>
+
+                    <strong id="round">
+                        {{ round_number }}
+                    </strong>
+
+                </div>
+
+            </div>
+
+
+            <div class="stat-card green">
+
+                <div class="stat-icon">
+                    💡
+                </div>
+
+                <div class="stat-text">
+
+                    <span>
+                        HINTS LEFT
+                    </span>
+
+                    <strong id="hint-count">
+                        3
+                    </strong>
+
+                </div>
+
+            </div>
+
+
+            <div class="stat-card red">
+
+                <div class="stat-icon">
+                    ❤️
+                </div>
+
+                <div class="stat-text">
+
+                    <span>
+                        LIVES
+                    </span>
+
+                    <strong id="lives">
+                        ❤️❤️❤️
+                    </strong>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- SIZE SELECTOR -->
+
+        <section class="size-panel">
+
+            <div>
+
+                <span class="section-label">
+                    PUZZLE SETTINGS
+                </span>
+
+                <h2>
+                    Choose Board Size
+                </h2>
+
+            </div>
+
+
+            <div class="size-buttons">
+
+                <button
+                    type="button"
+                    onclick="changeSize(4)"
+                    class="{% if size == 4 %}active{% endif %}">
+
+                    <strong>4 × 4</strong>
+                    <small>Easy</small>
+
+                </button>
+
+
+                <button
+                    type="button"
+                    onclick="changeSize(6)"
+                    class="{% if size == 6 %}active{% endif %}">
+
+                    <strong>6 × 6</strong>
+                    <small>Medium</small>
+
+                </button>
+
+
+                <button
+                    type="button"
+                    onclick="changeSize(9)"
+                    class="{% if size == 9 %}active{% endif %}">
+
+                    <strong>9 × 9</strong>
+                    <small>Classic</small>
+
+                </button>
+
+            </div>
+
+        </section>
+
+
+        <!-- GAME AREA -->
+
+        <section class="game-layout">
+
+
+            <!-- SUDOKU CARD -->
+
+            <div class="game-card">
+
+                <div class="game-card-header">
+
+                    <div>
+
+                        <span class="section-label">
+                            CURRENT PUZZLE
+                        </span>
+
+                        <h2>
+                            Complete the Grid
+                        </h2>
+
+                        <p>
+                            Select a cell and enter the correct number.
+                        </p>
+
+                    </div>
+
+
+                    <div class="round-pill">
+
+                        <span>
+                            ROUND
+                        </span>
+
+                        <strong id="round-badge">
+                            {{ round_number }}
+                        </strong>
+
+                    </div>
+
+                </div>
+
+
+                <!-- BOARD -->
+
+                <div
+                    id="board"
+                    class="board size-{{ size }}">
+
+                    {% for row in range(size) %}
+
+                        {% for col in range(size) %}
+
+                            {% if puzzle[row][col] != 0 %}
+
+                                <input
+                                    class="cell fixed"
+                                    value="{{ puzzle[row][col] }}"
+                                    readonly
+                                    data-row="{{ row }}"
+                                    data-col="{{ col }}">
+
+                            {% else %}
+
+                                <input
+                                    class="cell"
+                                    type="text"
+                                    maxlength="1"
+                                    inputmode="numeric"
+                                    pattern="[0-9]"
+                                    data-row="{{ row }}"
+                                    data-col="{{ col }}">
+
+                            {% endif %}
+
+                        {% endfor %}
+
+                    {% endfor %}
+
+                </div>
+
+
+                <!-- NUMBER PAD -->
+
+                <div class="number-area">
+
+                    <span class="number-title">
+                        NUMBER PAD
+                    </span>
+
+
+                    <div class="number-buttons">
+
+                        {% for number in range(1, size + 1) %}
+
+                            <button
+                                type="button"
+                                class="number-btn"
+                                onclick="enterNumber({{ number }})">
+
+                                {{ number }}
+
+                            </button>
+
+                        {% endfor %}
+
+
+                        <button
+                            type="button"
+                            class="erase-btn"
+                            onclick="eraseNumber()">
+
+                            ⌫
+                            <span>Erase</span>
+
+                        </button>
+
+                    </div>
+
+                </div>
+
+
+                <!-- ACTIONS -->
+
+                <div class="actions">
+
+                    <button
+                        type="button"
+                        class="action check"
+                        onclick="checkAnswer()">
+
+                        <span>✓</span>
+
+                        Check Answer
+
+                    </button>
+
+
+                    <button
+                        type="button"
+                        class="action reset"
+                        onclick="resetBoard()">
+
+                        <span>↻</span>
+
+                        Reset
+
+                    </button>
+
+
+                    <button
+                        type="button"
+                        class="action hint"
+                        onclick="useHint()">
+
+                        <span>💡</span>
+
+                        Hint
+
+                    </button>
+
+                </div>
+
+
+                <div id="message"></div>
+
+            </div>
+
+
+            <!-- RIGHT PANEL -->
+
+            <div class="right-panel">
+
+
+                <!-- LIVES -->
+
+                <div class="side-card">
+
+                    <div class="side-card-title">
+
+                        <div class="mini-icon heart">
+                            ❤️
+                        </div>
+
+                        <div>
+
+                            <span>
+                                YOUR LIVES
+                            </span>
+
+                            <strong>
+                                Stay focused
+                            </strong>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="large-lives"
+                         id="large-lives">
+
+                        ❤️ ❤️ ❤️
+
+                    </div>
+
+
+                    <p>
+                        Every incorrect completed
+                        puzzle costs one life.
+                    </p>
+
+                </div>
+
+
+                <!-- HINTS -->
+
+                <div class="side-card hint-card">
+
+                    <div class="side-card-title">
+
+                        <div class="mini-icon bulb">
+                            💡
+                        </div>
+
+                        <div>
+
+                            <span>
+                                HINTS
+                            </span>
+
+                            <strong>
+                                Need some help?
+                            </strong>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="hint-number">
+
+                        <strong id="side-hint-number">
+                            3
+                        </strong>
+
+                        <span>
+                            hints remaining
+                        </span>
+
+                    </div>
+
+
+                    <div class="hint-bar">
+
+                        <div
+                            id="hint-progress"
+                            class="hint-progress">
+                        </div>
+
+                    </div>
+
+
+                    <p>
+                        Use your hints wisely.
+                    </p>
+
+                </div>
+
+
+                <!-- HOW TO PLAY -->
+
+                <div class="side-card">
+
+                    <div class="side-card-title">
+
+                        <div class="mini-icon blue-icon">
+                            ?
+                        </div>
+
+                        <div>
+
+                            <span>
+                                HOW TO PLAY
+                            </span>
+
+                            <strong>
+                                Quick Guide
+                            </strong>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="guide">
+
+                        <div>
+                            <span>1</span>
+                            Select an empty cell.
+                        </div>
+
+                        <div>
+                            <span>2</span>
+                            Enter a number.
+                        </div>
+
+                        <div>
+                            <span>3</span>
+                            Check your answer.
+                        </div>
+
+                        <div>
+                            <span>4</span>
+                            Complete the puzzle.
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <footer>
+
+            <span>
+                Sudoku Challenge
+            </span>
+
+            <span>
+                Think • Solve • Win
+            </span>
+
+        </footer>
+
+    </main>
+
+</div>
+
+
+<!-- SECRET CODE MODAL -->
+
+<div
+    id="code-modal"
+    class="code-modal">
+
+    <div class="code-box">
+
+        <button
+            type="button"
+            class="close-code"
+            onclick="closeCodeModal()">
+
+            ×
+
+        </button>
+
+
+        <div class="lock-icon">
+            🔐
+        </div>
+
+
+        <span class="modal-label">
+            HINT RECOVERY
+        </span>
+
+
+        <h2>
+            Secret Code
+        </h2>
+
+
+        <p>
+            You have used all 3 hints.
+            Enter the secret code to restore them.
+        </p>
+
+
+        <div class="code-input-wrapper">
+
+            <input
+                type="password"
+                id="secret-code"
+                placeholder="Enter secret code"
+                autocomplete="off"
+                maxlength="30">
+
+            <button
+                type="button"
+                class="show-code"
+                onclick="toggleCode()">
+
+                👁
+
+            </button>
+
+        </div>
+
+
+        <p
+            id="code-error"
+            class="code-error">
+        </p>
+
+
+        <div class="code-actions">
+
+            <button
+                type="button"
+                class="cancel-code"
+                onclick="closeCodeModal()">
+
+                Cancel
+
+            </button>
+
+
+            <button
+                type="button"
+                class="unlock-code"
+                onclick="verifyCode()">
+
+                🔓 Unlock Hints
+
+            </button>
+
+        </div>
+
+
+        <div class="code-tip">
+
+            💡 Enter the correct code to restore 3 hints.
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<script>
+
+let solution = {{ solution | tojson }};
+
+let size = {{ size }};
+
+let round = {{ round_number }};
+
+let selectedCell = null;
+
+let cells = document.querySelectorAll(".cell");
+
+let hintTries = 3;
+
+let lives = 3;
+
+
+/* =========================
+   SETUP CELLS
+   ========================= */
+
+function setupCells() {
+
+    cells = document.querySelectorAll(".cell");
+
+
+    cells.forEach(cell => {
+
+        cell.addEventListener("click", function() {
+
+            if (
+                !this.classList.contains("fixed") &&
+                lives > 0
+            ) {
+
+                cells.forEach(c => {
+                    c.classList.remove("selected-cell");
+                });
+
+                this.classList.add("selected-cell");
+
+                selectedCell = this;
+
+            }
+
+        });
+
+
+        cell.addEventListener("input", function() {
+
+            if (!this.classList.contains("fixed")) {
+
+                this.value =
+                    this.value.replace(/[^0-9]/g, "");
+
+
+                if (this.value !== "") {
+
+                    const value = Number(this.value);
+
+                    if (
+                        value < 1 ||
+                        value > size
+                    ) {
+
+                        this.value = "";
+
+                    }
+
+                }
+
+            }
+
+        });
+
+
+        cell.addEventListener("keydown", function(event) {
+
+            if (event.key === "Enter") {
+                checkAnswer();
+            }
+
+        });
+
+    });
+
+}
+
+
+setupCells();
+
+
+/* =========================
+   ENTER NUMBER
+   ========================= */
+
+function enterNumber(number) {
+
+    if (
+        selectedCell &&
+        lives > 0 &&
+        !selectedCell.classList.contains("fixed")
+    ) {
+
+        selectedCell.value = number;
+
+        selectedCell.classList.remove("wrong");
+
+    }
+
+}
+
+
+/* =========================
+   ERASE
+   ========================= */
+
+function eraseNumber() {
+
+    if (
+        selectedCell &&
+        lives > 0 &&
+        !selectedCell.classList.contains("fixed")
+    ) {
+
+        selectedCell.value = "";
+
+        selectedCell.classList.remove("wrong");
+
+    }
+
+}
+
+
+/* =========================
+   CHECK ANSWER
+   ========================= */
+
+function checkAnswer() {
+
+    if (lives <= 0) {
+        return;
+    }
+
+
+    let correct = true;
+
+    let complete = true;
+
+
+    cells.forEach(cell => {
+
+        if (cell.classList.contains("fixed")) {
+            return;
+        }
+
+
+        const row =
+            Number(cell.dataset.row);
+
+        const col =
+            Number(cell.dataset.col);
+
+        const value =
+            Number(cell.value);
+
+
+        cell.classList.remove("wrong");
+
+
+        if (!cell.value) {
+
+            complete = false;
+
+        }
+        else if (
+            value !== solution[row][col]
+        ) {
+
+            correct = false;
+
+            cell.classList.add("wrong");
+
+        }
+
+    });
+
+
+    const message =
+        document.getElementById("message");
+
+
+    if (!complete) {
+
+        message.textContent =
+            "⚠️ Please complete the puzzle first.";
+
+        message.className = "warning";
+
+        return;
+
+    }
+
+
+    if (!correct) {
+
+        lives--;
+
+        updateLives();
+
+
+        message.textContent =
+            "❌ Some answers are incorrect! You lost 1 life.";
+
+        message.className = "error";
+
+
+        if (lives <= 0) {
+            gameOver();
+        }
+
+        return;
+
+    }
+
+
+    message.textContent =
+        "🎉 Perfect! Round Complete!";
+
+    message.className = "success";
+
+
+    setTimeout(loadNextRound, 1200);
+
+}
+
+
+/* =========================
+   UPDATE LIVES
+   ========================= */
+
+function updateLives() {
+
+    let hearts = "";
+
+
+    for (let i = 0; i < lives; i++) {
+        hearts += "❤️";
+    }
+
+
+    for (let i = lives; i < 3; i++) {
+        hearts += "🖤";
+    }
+
+
+    document.getElementById("lives").textContent =
+        hearts;
+
+
+    document.getElementById("large-lives").textContent =
+        hearts.split("").join("");
+
+}
+
+
+/* =========================
+   GAME OVER
+   ========================= */
+
+function gameOver() {
+
+    const message =
+        document.getElementById("message");
+
+
+    message.innerHTML = `
+
+        <div class="game-over-box">
+
+            <div class="game-over-icon">
+                💔
+            </div>
+
+            <strong>
+                Game Over
+            </strong>
+
+            <span>
+                You lost all your lives.
+            </span>
+
+            <button
+                type="button"
+                class="try-again"
+                onclick="restartGame()">
+
+                Try Again
+
+            </button>
+
+        </div>
+
+    `;
+
+
+    message.className = "game-over";
+
+
+    cells.forEach(cell => {
+
+        if (!cell.classList.contains("fixed")) {
+            cell.disabled = true;
+        }
+
+    });
+
+}
+
+
+/* =========================
+   RESTART
+   ========================= */
+
+function restartGame() {
+
+    lives = 3;
+
+    hintTries = 3;
+
+    updateLives();
+
+    updateHintDisplay();
+
+
+    cells.forEach(cell => {
+
+        cell.disabled = false;
+
+
+        if (!cell.classList.contains("fixed")) {
+
+            cell.value = "";
+
+            cell.classList.remove("wrong");
+
+            cell.classList.remove("hint-cell");
+
+            cell.classList.remove("selected-cell");
+
+        }
+
+    });
+
+
+    selectedCell = null;
+
+
+    document.getElementById("message").textContent = "";
+
+    document.getElementById("message").className = "";
+
+}
+
+
+/* =========================
+   RESET
+   ========================= */
+
+function resetBoard() {
+
+    if (lives <= 0) {
+        return;
+    }
+
+
+    cells.forEach(cell => {
+
+        if (!cell.classList.contains("fixed")) {
+
+            cell.value = "";
+
+            cell.classList.remove("wrong");
+
+            cell.classList.remove("hint-cell");
+
+        }
+
+    });
+
+
+    selectedCell = null;
+
+
+    cells.forEach(cell => {
+        cell.classList.remove("selected-cell");
+    });
+
+
+    document.getElementById("message").textContent = "";
+
+    document.getElementById("message").className = "";
+
+}
+
+
+/* =========================
+   NEXT ROUND
+   ========================= */
+
+function loadNextRound() {
+
+    fetch(
+        `/new_round?size=${size}&round=${round}`
+    )
+
+    .then(response => response.json())
+
+    .then(data => {
+
+        round = data.round;
+
+        solution = data.solution;
+
+
+        document.getElementById("round").textContent =
+            round;
+
+
+        document.getElementById("round-badge").textContent =
+            round;
+
+
+        document.getElementById("side-round").textContent =
+            round;
+
+
+        createBoard(data.puzzle);
+
+
+        document.getElementById("message").textContent = "";
+
+        document.getElementById("message").className = "";
+
+
+        hintTries = 3;
+
+        lives = 3;
+
+
+        updateLives();
+
+        updateHintDisplay();
+
+    });
+
+}
+
+
+/* =========================
+   CREATE BOARD
+   ========================= */
+
+function createBoard(puzzle) {
+
+    const board =
+        document.getElementById("board");
+
+
+    board.innerHTML = "";
+
+
+    board.className =
+        `board size-${size}`;
+
+
+    for (let row = 0; row < size; row++) {
+
+        for (let col = 0; col < size; col++) {
+
+            const cell =
+                document.createElement("input");
+
+
+            cell.classList.add("cell");
+
+
+            cell.dataset.row = row;
+
+            cell.dataset.col = col;
+
+
+            if (puzzle[row][col] !== 0) {
+
+                cell.value =
+                    puzzle[row][col];
+
+                cell.readOnly = true;
+
+                cell.classList.add("fixed");
+
+            }
+            else {
+
+                cell.type = "text";
+
+                cell.maxLength = 1;
+
+                cell.inputMode = "numeric";
+
+                cell.pattern = "[0-9]";
+
+            }
+
+
+            board.appendChild(cell);
+
+        }
+
+    }
+
+
+    selectedCell = null;
+
+
+    setupCells();
+
+}
+
+
+/* =========================
+   HINT
+   ========================= */
+
+function useHint() {
+
+    if (lives <= 0) {
+        return;
+    }
+
+
+    if (hintTries <= 0) {
+
+        openCodeModal();
+
+        return;
+
+    }
+
+
+    const emptyCells = [];
+
+
+    cells.forEach(cell => {
+
+        if (cell.classList.contains("fixed")) {
+            return;
+        }
+
+
+        if (cell.value === "") {
+
+            emptyCells.push({
+
+                cell: cell,
+
+                row: Number(cell.dataset.row),
+
+                col: Number(cell.dataset.col)
+
+            });
+
+        }
+
+    });
+
+
+    if (emptyCells.length === 0) {
+
+        const message =
+            document.getElementById("message");
+
+
+        message.textContent =
+            "ℹ️ There are no empty cells available.";
+
+        message.className =
+            "warning";
+
+        return;
+
+    }
+
+
+    const randomIndex =
+        Math.floor(
+            Math.random() * emptyCells.length
+        );
+
+
+    const selected =
+        emptyCells[randomIndex];
+
+
+    selected.cell.value =
+        solution[
+            selected.row
+        ][
+            selected.col
+        ];
+
+
+    selected.cell.classList.add(
+        "hint-cell"
+    );
+
+
+    hintTries--;
+
+
+    updateHintDisplay();
+
+}
+
+
+/* =========================
+   HINT DISPLAY
+   ========================= */
+
+function updateHintDisplay() {
+
+    document.getElementById("hint-count").textContent =
+        hintTries;
+
+
+    document.getElementById("side-hints").textContent =
+        hintTries;
+
+
+    document.getElementById("side-hint-number").textContent =
+        hintTries;
+
+
+    const progress =
+        document.getElementById("hint-progress");
+
+
+    progress.style.width =
+        `${(hintTries / 3) * 100}%`;
+
+}
+
+
+/* =========================
+   SECRET CODE MODAL
+   ========================= */
+
+function openCodeModal() {
+
+    const modal =
+        document.getElementById("code-modal");
+
+
+    const input =
+        document.getElementById("secret-code");
+
+
+    const error =
+        document.getElementById("code-error");
+
+
+    modal.style.display = "flex";
+
+
+    input.value = "";
+
+    input.type = "password";
+
+
+    error.textContent = "";
+
+
+    setTimeout(() => {
+        input.focus();
+    }, 100);
+
+}
+
+
+function closeCodeModal() {
+
+    document.getElementById("code-modal").style.display =
+        "none";
+
+}
+
+
+function toggleCode() {
+
+    const input =
+        document.getElementById("secret-code");
+
+
+    const button =
+        document.querySelector(".show-code");
+
+
+    if (input.type === "password") {
+
+        input.type = "text";
+
+        button.textContent = "🙈";
+
+    }
+    else {
+
+        input.type = "password";
+
+        button.textContent = "👁";
+
+    }
+
+}
+
+
+function verifyCode() {
+
+    const input =
+        document.getElementById("secret-code");
+
+
+    const error =
+        document.getElementById("code-error");
+
+
+    const code =
+        input.value.trim();
+
+
+    if (code === "") {
+
+        error.textContent =
+            "Please enter the secret code.";
+
+        input.focus();
+
+        return;
+
+    }
+
+
+    fetch("/verify_hint_code", {
+
+        method: "POST",
+
+        headers: {
+            "Content-Type": "application/json"
+        },
+
+        body: JSON.stringify({
+            code: code
+        })
+
+    })
+
+    .then(response => response.json())
+
+    .then(data => {
+
+        if (!data.correct) {
+
+            error.textContent =
+                "❌ Incorrect secret code.";
+
+            input.value = "";
+
+            input.focus();
+
+            return;
+
+        }
+
+
+        hintTries = 3;
+
+
+        updateHintDisplay();
+
+
+        closeCodeModal();
+
+
+        const message =
+            document.getElementById("message");
+
+
+        message.textContent =
+            "🔓 Hints restored! You have 3 hints again.";
+
+        message.className =
+            "success";
+
+    })
+
+    .catch(() => {
+
+        error.textContent =
+            "⚠️ Something went wrong. Please try again.";
+
+    });
+
+}
+
+
+/* =========================
+   MODAL KEYBOARD
+   ========================= */
+
+document.getElementById("secret-code")
+    .addEventListener("keydown", function(event) {
+
+        if (event.key === "Enter") {
+            verifyCode();
+        }
+
+
+        if (event.key === "Escape") {
+            closeCodeModal();
+        }
+
+    });
+
+
+document.getElementById("code-modal")
+    .addEventListener("click", function(event) {
+
+        if (event.target === this) {
+            closeCodeModal();
+        }
+
+    });
+
+
+/* =========================
+   CHANGE SIZE
+   ========================= */
+
+function changeSize(newSize) {
+
+    window.location.href =
+        `/?size=${newSize}&round=1`;
+
+}
+
+
+/* =========================
+   INITIAL DISPLAY
+   ========================= */
+
+updateLives();
+
+updateHintDisplay();
+
+</script>
+
+</body>
+
+</html>
